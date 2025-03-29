@@ -120,38 +120,39 @@ class Game:
 
         # Draw info panel
         info_x = GAME_WIDTH
-        pygame.draw.rect(self.screen, WHITE, (info_x, 0, INFO_WIDTH, WINDOW_HEIGHT), 1)
+        pygame.draw.rect(self.screen, WHITE, (info_x, 0, INFO_WIDTH, WINDOW_HEIGHT))
+        BLUE = (0, 0, 255)
 
         # Draw buttons and info
         font = pygame.font.Font(None, 20)
         
         # Start button
-        pygame.draw.rect(self.screen, WHITE, (info_x + 5, 10, 40, 30), 1)
-        start_text = font.render("Start", True, WHITE)
+        pygame.draw.rect(self.screen, BLUE, (info_x + 5, 10, 40, 30), 1)
+        start_text = font.render("Start", True, BLUE)
         self.screen.blit(start_text, (info_x + 7, 20))
 
         # Time display
         if not self.game_over or self.show_time:
-            time_text = font.render(str(self.elapsed_time), True, WHITE)
+            time_text = font.render(str(self.elapsed_time), True, BLUE)
             self.screen.blit(time_text, (info_x + 7, 60))
 
         # Color count button
-        pygame.draw.rect(self.screen, WHITE, (info_x + 5, 100, 40, 30), 1)
-        color_text = font.render(str(self.color_count), True, WHITE)
+        pygame.draw.rect(self.screen, BLUE, (info_x + 5, 100, 40, 30), 1)
+        color_text = font.render(str(self.color_count), True, BLUE)
         self.screen.blit(color_text, (info_x + 7, 110))
 
         # Speed button
-        pygame.draw.rect(self.screen, WHITE, (info_x + 5, 150, 40, 30), 1)
-        speed_text = font.render(str(self.speed_level), True, WHITE)
+        pygame.draw.rect(self.screen, BLUE, (info_x + 5, 150, 40, 30), 1)
+        speed_text = font.render(str(self.speed_level), True, BLUE)
         self.screen.blit(speed_text, (info_x + 7, 160))
 
         # Square count button
-        pygame.draw.rect(self.screen, WHITE, (info_x + 5, 200, 40, 30), 1)
-        count_text = font.render(str(self.total_squares), True, WHITE)
+        pygame.draw.rect(self.screen, BLUE, (info_x + 5, 200, 40, 30), 1)
+        count_text = font.render(str(self.total_squares), True, BLUE)
         self.screen.blit(count_text, (info_x + 7, 210))
 
         # Remaining squares
-        remain_text = font.render(str(self.remaining_squares), True, WHITE)
+        remain_text = font.render(str(self.remaining_squares), True, BLUE)
         self.screen.blit(remain_text, (info_x + 7, 260))
 
         pygame.display.flip()
