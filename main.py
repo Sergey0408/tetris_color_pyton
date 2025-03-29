@@ -186,9 +186,20 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                game.handle_click(event.pos)
+                x, y = event.pos
+                # Check if click is on current square at the top
+                if (game.current_square and 
+                    x >= game.current_square['x'] and 
+                    x < game.current_square['x'] + SQUARE_SIZE and
+                    y >= game.current_square['y'] and 
+                    y < game.current_square['y'] + SQUARE_SIZE):
+                    # Cycle to next sector
+                    game.current_square['sector'] = (game.current_square['sector'] + 1) % SECTORS
+                    game.current_square['x'] = game.current_square['sector'] * SECTOR_WIDTH
+                else:
+                    game.handle_click(event.pos)
             elif event.type == pygame.KEYDOWN:
-                if game.current_square and not game.game_over and game.is_delayed:
+                if game.current_square and not game.game_over:
                     if event.key == pygame.K_LEFT:
                         if game.current_square['sector'] > 0:
                             game.current_square['sector'] -= 1
