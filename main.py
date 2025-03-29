@@ -151,7 +151,7 @@ class Game:
             self.screen.blit(time_text, (text_x, 60))
 
         # Color icon - circle with 4 colored sectors
-        center = (info_x + 25, 144)  # 1mm above color button
+        center = (info_x + 25, 125)  # Color icon position
         radius = 10
         colors = [COLORS[0], COLORS[1], COLORS[2], COLORS[3]]
         
@@ -162,21 +162,21 @@ class Game:
         pygame.draw.circle(self.screen, colors[3], (center[0] + 5, center[1] + 5), 5)
         
         # Color count button
-        pygame.draw.rect(self.screen, BLUE, (info_x + 5, 148, button_width, 30), 1)
+        pygame.draw.rect(self.screen, BLUE, (info_x + 5, 129, button_width, 30), 1)
         larger_font = pygame.font.Font(None, 30)  # 1.5x larger font
         color_text = larger_font.render(str(self.color_count), True, BLUE)
         text_x = info_x + 5 + (button_width - color_text.get_width()) // 2
-        text_y = 148 + (30 - color_text.get_height()) // 2  # Vertical centering
+        text_y = 129 + (30 - color_text.get_height()) // 2  # Vertical centering
         self.screen.blit(color_text, (text_x, text_y))
 
         # Speed icon (letter V)
         speed_icon_font = pygame.font.Font(None, 30)
         v_text = speed_icon_font.render("V", True, BLUE)
         v_x = info_x + 5 + (button_width - v_text.get_width()) // 2
-        self.screen.blit(v_text, (v_x, 188))  # 1mm gap from color button
+        self.screen.blit(v_text, (v_x, 169))  # 1mm gap from color button
         
         # Speed button
-        pygame.draw.rect(self.screen, BLUE, (info_x + 5, 207, button_width, 30), 1)
+        pygame.draw.rect(self.screen, BLUE, (info_x + 5, 188, button_width, 30), 1)
         speed_text = larger_font.render(str(self.speed_level), True, BLUE)
         text_x = info_x + 5 + (button_width - speed_text.get_width()) // 2
         text_y = 188 + (30 - speed_text.get_height()) // 2  # Vertical centering
@@ -208,12 +208,12 @@ class Game:
         if info_x + 5 <= x <= info_x + 45:
             if 10 <= y <= 40:  # Start button
                 self.reset_game()
-            elif 148 <= y <= 178:  # Color count button
+            elif 129 <= y <= 159:  # Color count button
                 color_counts = [4, 5, 7, 10, 15]
                 current_index = color_counts.index(self.color_count)
                 self.color_count = color_counts[(current_index + 1) % len(color_counts)]
                 self.time_blinking = False
-            elif 207 <= y <= 237:  # Speed button
+            elif 188 <= y <= 218:  # Speed button
                 self.speed_level = self.speed_level % 10 + 1
                 self.time_blinking = False
             elif 200 <= y <= 230:  # Square count button
