@@ -145,22 +145,33 @@ class Game:
 
         # Time display
         if not self.game_over or self.show_time:
-            time_text = font.render(str(self.elapsed_time), True, BLUE)
+            time_font = pygame.font.Font(None, 40)  # Larger font for time
+            time_text = time_font.render(str(self.elapsed_time), True, BLUE)
             text_x = info_x + 5 + (button_width - time_text.get_width()) // 2
             self.screen.blit(time_text, (text_x, 60))
 
-        # Color icon
-        pygame.draw.circle(self.screen, BLUE, (info_x + 25, 85), 10)
+        # Color icon - circle with 4 colored sectors
+        center = (info_x + 25, 95)  # Moved down
+        radius = 10
+        colors = [COLORS[0], COLORS[1], COLORS[2], COLORS[3]]
+        
+        # Draw 4 sectors
+        pygame.draw.circle(self.screen, colors[0], (center[0] - 5, center[1] - 5), 5)
+        pygame.draw.circle(self.screen, colors[1], (center[0] + 5, center[1] - 5), 5)
+        pygame.draw.circle(self.screen, colors[2], (center[0] - 5, center[1] + 5), 5)
+        pygame.draw.circle(self.screen, colors[3], (center[0] + 5, center[1] + 5), 5)
         
         # Color count button
-        pygame.draw.rect(self.screen, BLUE, (info_x + 5, 100, button_width, 30), 1)
+        pygame.draw.rect(self.screen, BLUE, (info_x + 5, 110, button_width, 30), 1)
         color_text = font.render(str(self.color_count), True, BLUE)
         text_x = info_x + 5 + (button_width - color_text.get_width()) // 2
         self.screen.blit(color_text, (text_x, 110))
 
-        # Speed icon
-        points = [(info_x + 15, 135), (info_x + 35, 135), (info_x + 25, 145)]
-        pygame.draw.polygon(self.screen, BLUE, points)
+        # Speed icon (letter V)
+        speed_icon_font = pygame.font.Font(None, 30)
+        v_text = speed_icon_font.render("V", True, BLUE)
+        v_x = info_x + 5 + (button_width - v_text.get_width()) // 2
+        self.screen.blit(v_text, (v_x, 135))
         
         # Speed button
         pygame.draw.rect(self.screen, BLUE, (info_x + 5, 150, button_width, 30), 1)
