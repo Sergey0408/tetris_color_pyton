@@ -173,6 +173,12 @@ class Game:
         text_x = info_x + 5 + (button_width - remain_text.get_width()) // 2
         self.screen.blit(remain_text, (text_x, 260))
 
+        # Stop button at bottom
+        pygame.draw.rect(self.screen, BLUE, (info_x + 5, WINDOW_HEIGHT - 40, button_width, 30), 1)
+        stop_text = font.render("Stop", True, BLUE)
+        text_x = info_x + 5 + (button_width - stop_text.get_width()) // 2
+        self.screen.blit(stop_text, (text_x, WINDOW_HEIGHT - 30))
+
         pygame.display.flip()
 
     def handle_click(self, pos):
@@ -196,6 +202,12 @@ class Game:
                 self.total_squares = square_counts[(current_index + 1) % len(square_counts)]
                 self.remaining_squares = self.total_squares
                 self.time_blinking = False
+            elif WINDOW_HEIGHT - 40 <= y <= WINDOW_HEIGHT - 10:  # Stop button
+                self.squares = []
+                self.current_square = None
+                self.game_over = False
+                self.elapsed_time = 0
+                self.remaining_squares = self.total_squares
 
 def main():
     game = Game()
