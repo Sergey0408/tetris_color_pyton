@@ -205,6 +205,7 @@ class Game:
                 self.current_square = None
                 self.game_over = False
                 self.elapsed_time = 0
+                self.start_time = time.time()
                 self.remaining_squares = self.total_squares
 
 def main():
