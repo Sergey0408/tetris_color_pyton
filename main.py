@@ -162,22 +162,22 @@ class Game:
         pygame.draw.circle(self.screen, colors[3], (center[0] + 5, center[1] + 5), 5)
         
         # Color count button
-        pygame.draw.rect(self.screen, BLUE, (info_x + 5, 110, button_width, 30), 1)
+        pygame.draw.rect(self.screen, BLUE, (info_x + 5, 129, button_width, 30), 1)
         color_text = font.render(str(self.color_count), True, BLUE)
         text_x = info_x + 5 + (button_width - color_text.get_width()) // 2
-        self.screen.blit(color_text, (text_x, 110))
+        self.screen.blit(color_text, (text_x, 129))
 
         # Speed icon (letter V)
         speed_icon_font = pygame.font.Font(None, 30)
         v_text = speed_icon_font.render("V", True, BLUE)
         v_x = info_x + 5 + (button_width - v_text.get_width()) // 2
-        self.screen.blit(v_text, (v_x, 135))
+        self.screen.blit(v_text, (v_x, 173))
         
         # Speed button
-        pygame.draw.rect(self.screen, BLUE, (info_x + 5, 150, button_width, 30), 1)
+        pygame.draw.rect(self.screen, BLUE, (info_x + 5, 188, button_width, 30), 1)
         speed_text = font.render(str(self.speed_level), True, BLUE)
         text_x = info_x + 5 + (button_width - speed_text.get_width()) // 2
-        self.screen.blit(speed_text, (text_x, 160))
+        self.screen.blit(speed_text, (text_x, 198))
 
         # # Square count button
         # pygame.draw.rect(self.screen, BLUE, (info_x + 5, 200, button_width, 30), 1)
