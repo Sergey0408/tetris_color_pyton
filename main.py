@@ -38,10 +38,12 @@ class Game:
         self.remaining_squares = self.total_squares
         self.squares = []
         self.current_square = self.create_square()
-        self.fall_speed = 10  # mm per second
+        self.fall_speed = 20  # mm per second
         self.time_blinking = False
         self.last_blink = 0
         self.show_time = True
+        self.delay_start = None
+        self.is_delayed = True
 
     def create_square(self):
         if self.remaining_squares <= 0:
@@ -49,6 +51,8 @@ class Game:
         x = random.randint(0, (GAME_WIDTH - SQUARE_SIZE) // SQUARE_SIZE) * SQUARE_SIZE
         color = random.choice(COLORS[:self.color_count])
         self.remaining_squares -= 1
+        self.is_delayed = True
+        self.delay_start = None
         return {'x': x, 'y': 0, 'color': color}
 
     def update(self):
@@ -60,8 +64,14 @@ class Game:
             return
 
         if self.current_square:
-            move_distance = (self.fall_speed * (1.2 ** (self.speed_level - 1))) / 60
-            self.current_square['y'] += move_distance
+            if self.is_delayed:
+                if self.delay_start is None:
+                    self.delay_start = time.time()
+                elif time.time() - self.delay_start >= 2:
+                    self.is_delayed = False
+            else:
+                move_distance = (self.fall_speed * (1.3 ** (self.speed_level - 1))) / 60
+                self.current_square['y'] += move_distance
 
             # Check collision with bottom or other squares
             if self.current_square['y'] + SQUARE_SIZE >= WINDOW_HEIGHT:
