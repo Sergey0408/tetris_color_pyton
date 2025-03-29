@@ -126,34 +126,42 @@ class Game:
         # Draw buttons and info
         font = pygame.font.Font(None, 20)
         
+        button_width = 40
+        
         # Start button
-        pygame.draw.rect(self.screen, BLUE, (info_x + 5, 10, 40, 30), 1)
+        pygame.draw.rect(self.screen, BLUE, (info_x + 5, 10, button_width, 30), 1)
         start_text = font.render("Start", True, BLUE)
-        self.screen.blit(start_text, (info_x + 7, 20))
+        text_x = info_x + 5 + (button_width - start_text.get_width()) // 2
+        self.screen.blit(start_text, (text_x, 20))
 
         # Time display
         if not self.game_over or self.show_time:
             time_text = font.render(str(self.elapsed_time), True, BLUE)
-            self.screen.blit(time_text, (info_x + 7, 60))
+            text_x = info_x + 5 + (button_width - time_text.get_width()) // 2
+            self.screen.blit(time_text, (text_x, 60))
 
         # Color count button
-        pygame.draw.rect(self.screen, BLUE, (info_x + 5, 100, 40, 30), 1)
+        pygame.draw.rect(self.screen, BLUE, (info_x + 5, 100, button_width, 30), 1)
         color_text = font.render(str(self.color_count), True, BLUE)
-        self.screen.blit(color_text, (info_x + 7, 110))
+        text_x = info_x + 5 + (button_width - color_text.get_width()) // 2
+        self.screen.blit(color_text, (text_x, 110))
 
         # Speed button
-        pygame.draw.rect(self.screen, BLUE, (info_x + 5, 150, 40, 30), 1)
+        pygame.draw.rect(self.screen, BLUE, (info_x + 5, 150, button_width, 30), 1)
         speed_text = font.render(str(self.speed_level), True, BLUE)
-        self.screen.blit(speed_text, (info_x + 7, 160))
+        text_x = info_x + 5 + (button_width - speed_text.get_width()) // 2
+        self.screen.blit(speed_text, (text_x, 160))
 
         # Square count button
-        pygame.draw.rect(self.screen, BLUE, (info_x + 5, 200, 40, 30), 1)
+        pygame.draw.rect(self.screen, BLUE, (info_x + 5, 200, button_width, 30), 1)
         count_text = font.render(str(self.total_squares), True, BLUE)
-        self.screen.blit(count_text, (info_x + 7, 210))
+        text_x = info_x + 5 + (button_width - count_text.get_width()) // 2
+        self.screen.blit(count_text, (text_x, 210))
 
         # Remaining squares
         remain_text = font.render(str(self.remaining_squares), True, BLUE)
-        self.screen.blit(remain_text, (info_x + 7, 260))
+        text_x = info_x + 5 + (button_width - remain_text.get_width()) // 2
+        self.screen.blit(remain_text, (text_x, 260))
 
         pygame.display.flip()
 
@@ -190,12 +198,22 @@ def main():
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 x, y = event.pos
                 if (game.current_square and 
-                    x >= game.current_square['x'] - CLICK_SENSITIVITY and 
-                    x < game.current_square['x'] + SQUARE_SIZE + CLICK_SENSITIVITY and
                     y >= game.current_square['y'] - CLICK_SENSITIVITY and 
                     y < game.current_square['y'] + SQUARE_SIZE + CLICK_SENSITIVITY):
-                    game.dragging = True
-                    game.drag_offset = x - game.current_square['x']
+                    # Check if click is near the square
+                    if (x >= game.current_square['x'] - CLICK_SENSITIVITY and 
+                        x < game.current_square['x'] + SQUARE_SIZE + CLICK_SENSITIVITY):
+                        game.dragging = True
+                        game.drag_offset = x - game.current_square['x']
+                    # Check if click is to the left or right of square
+                    elif x < game.current_square['x']:
+                        sector = max(0, game.current_square['sector'] - 1)
+                        game.current_square['sector'] = sector
+                        game.current_square['x'] = sector * SECTOR_WIDTH
+                    elif x > game.current_square['x'] + SQUARE_SIZE:
+                        sector = min(SECTORS - 1, game.current_square['sector'] + 1)
+                        game.current_square['sector'] = sector
+                        game.current_square['x'] = sector * SECTOR_WIDTH
                 else:
                     game.handle_click(event.pos)
             elif event.type == pygame.MOUSEBUTTONUP:
