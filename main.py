@@ -53,8 +53,6 @@ class Game:
         self.is_delayed = True
 
     def create_square(self):
-        if self.remaining_squares <= 0:
-            return None
         sector = random.randint(0, SECTORS - 1)
         x = sector * SECTOR_WIDTH
         color = random.choice(COLORS[:self.color_count])
@@ -162,16 +160,16 @@ class Game:
         text_x = info_x + 5 + (button_width - speed_text.get_width()) // 2
         self.screen.blit(speed_text, (text_x, 160))
 
-        # Square count button
-        pygame.draw.rect(self.screen, BLUE, (info_x + 5, 200, button_width, 30), 1)
-        count_text = font.render(str(self.total_squares), True, BLUE)
-        text_x = info_x + 5 + (button_width - count_text.get_width()) // 2
-        self.screen.blit(count_text, (text_x, 210))
+        # # Square count button
+        # pygame.draw.rect(self.screen, BLUE, (info_x + 5, 200, button_width, 30), 1)
+        # count_text = font.render(str(self.total_squares), True, BLUE)
+        # text_x = info_x + 5 + (button_width - count_text.get_width()) // 2
+        # self.screen.blit(count_text, (text_x, 210))
 
-        # Remaining squares
-        remain_text = font.render(str(self.remaining_squares), True, BLUE)
-        text_x = info_x + 5 + (button_width - remain_text.get_width()) // 2
-        self.screen.blit(remain_text, (text_x, 260))
+        # # Remaining squares
+        # remain_text = font.render(str(self.remaining_squares), True, BLUE)
+        # text_x = info_x + 5 + (button_width - remain_text.get_width()) // 2
+        # self.screen.blit(remain_text, (text_x, 260))
 
         # Stop button at bottom
         pygame.draw.rect(self.screen, BLUE, (info_x + 5, WINDOW_HEIGHT - 40, button_width, 30), 1)
@@ -219,16 +217,8 @@ def main():
                 running = False
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 x, y = event.pos
-                if (game.current_square and 
-                    y >= game.current_square['y'] - CLICK_SENSITIVITY and 
-                    y < game.current_square['y'] + SQUARE_SIZE + CLICK_SENSITIVITY):
-                    # Check if click is near the square
-                    if (x >= game.current_square['x'] - CLICK_SENSITIVITY and 
-                        x < game.current_square['x'] + SQUARE_SIZE + CLICK_SENSITIVITY):
-                        game.dragging = True
-                        game.drag_offset = x - game.current_square['x']
-                    # Check if click is to the left or right of square
-                    elif x < game.current_square['x']:
+                if x < GAME_WIDTH and game.current_square:  # Only in game field
+                    if x < game.current_square['x']:
                         sector = max(0, game.current_square['sector'] - 1)
                         game.current_square['sector'] = sector
                         game.current_square['x'] = sector * SECTOR_WIDTH
@@ -236,7 +226,11 @@ def main():
                         sector = min(SECTORS - 1, game.current_square['sector'] + 1)
                         game.current_square['sector'] = sector
                         game.current_square['x'] = sector * SECTOR_WIDTH
-                else:
+                    elif (x >= game.current_square['x'] and 
+                          x < game.current_square['x'] + SQUARE_SIZE):
+                        game.dragging = True
+                        game.drag_offset = x - game.current_square['x']
+                elif x >= GAME_WIDTH:  # Info panel clicks
                     game.handle_click(event.pos)
             elif event.type == pygame.MOUSEBUTTONUP:
                 if game.dragging:
