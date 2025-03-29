@@ -36,6 +36,8 @@ class Game:
         self.game_over = False
         self.start_time = time.time()
         self.elapsed_time = 0
+        self.dragging = False
+        self.drag_offset = 0
         self.color_count = 4
         self.speed_level = 1
         self.total_squares = 10
@@ -186,27 +188,28 @@ def main():
                 running = False
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 x, y = event.pos
-                # Check if click is on current square at the top
                 if (game.current_square and 
                     x >= game.current_square['x'] - CLICK_SENSITIVITY and 
                     x < game.current_square['x'] + SQUARE_SIZE + CLICK_SENSITIVITY and
                     y >= game.current_square['y'] - CLICK_SENSITIVITY and 
                     y < game.current_square['y'] + SQUARE_SIZE + CLICK_SENSITIVITY):
-                    # Cycle to next sector
-                    game.current_square['sector'] = (game.current_square['sector'] + 1) % SECTORS
-                    game.current_square['x'] = game.current_square['sector'] * SECTOR_WIDTH
+                    game.dragging = True
+                    game.drag_offset = x - game.current_square['x']
                 else:
                     game.handle_click(event.pos)
-            elif event.type == pygame.KEYDOWN:
-                if game.current_square and not game.game_over:
-                    if event.key == pygame.K_LEFT:
-                        if game.current_square['sector'] > 0:
-                            game.current_square['sector'] -= 1
-                            game.current_square['x'] = game.current_square['sector'] * SECTOR_WIDTH
-                    elif event.key == pygame.K_RIGHT:
-                        if game.current_square['sector'] < SECTORS - 1:
-                            game.current_square['sector'] += 1
-                            game.current_square['x'] = game.current_square['sector'] * SECTOR_WIDTH
+            elif event.type == pygame.MOUSEBUTTONUP:
+                if game.dragging:
+                    game.dragging = False
+                    # Snap to nearest sector
+                    sector = round(game.current_square['x'] / SECTOR_WIDTH)
+                    sector = max(0, min(sector, SECTORS - 1))
+                    game.current_square['sector'] = sector
+                    game.current_square['x'] = sector * SECTOR_WIDTH
+            elif event.type == pygame.MOUSEMOTION:
+                if game.dragging and game.current_square:
+                    x = event.pos[0] - game.drag_offset
+                    x = max(0, min(x, GAME_WIDTH - SQUARE_SIZE))
+                    game.current_square['x'] = x
 
         game.update()
         game.draw()
