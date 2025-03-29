@@ -95,10 +95,18 @@ class Game:
                         self.current_square = self.create_square()
                         break
 
+        # Check game end conditions
         if not self.current_square and self.remaining_squares <= 0:
-            top_square = min([s['y'] for s in self.squares]) if self.squares else WINDOW_HEIGHT
-            if top_square <= 0:
+            self.game_over = True
+        
+        # Check vertical stack in each sector
+        sector_counts = [0] * SECTORS
+        for square in self.squares:
+            sector = square['x'] // SECTOR_WIDTH
+            sector_counts[sector] += 1
+            if sector_counts[sector] >= 9:
                 self.game_over = True
+                break
 
         self.elapsed_time = int(time.time() - self.start_time)
 
@@ -120,7 +128,8 @@ class Game:
 
         # Draw info panel
         info_x = GAME_WIDTH
-        pygame.draw.rect(self.screen, WHITE, (info_x, 0, INFO_WIDTH, WINDOW_HEIGHT))
+        LIGHT_BLUE = (173, 216, 230)
+        pygame.draw.rect(self.screen, LIGHT_BLUE, (info_x, 0, INFO_WIDTH, WINDOW_HEIGHT))
         BLUE = (0, 0, 255)
 
         # Draw buttons and info
