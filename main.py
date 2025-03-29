@@ -208,12 +208,12 @@ class Game:
         if info_x + 5 <= x <= info_x + 45:
             if 10 <= y <= 40:  # Start button
                 self.reset_game()
-            elif 100 <= y <= 130:  # Color count button
+            elif 129 <= y <= 159:  # Color count button
                 color_counts = [4, 5, 7, 10, 15]
                 current_index = color_counts.index(self.color_count)
                 self.color_count = color_counts[(current_index + 1) % len(color_counts)]
                 self.time_blinking = False
-            elif 150 <= y <= 180:  # Speed button
+            elif 188 <= y <= 218:  # Speed button
                 self.speed_level = self.speed_level % 10 + 1
                 self.time_blinking = False
             elif 200 <= y <= 230:  # Square count button
