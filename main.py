@@ -33,30 +33,24 @@ class Game:
         self.reset_game()
 
     def reset_game(self):
-        # Clear all game state
-        self.squares = []
-        self.current_square = None
-        self.remaining_squares = self.total_squares
-        
-        # Reset timing
         self.game_over = False
+        self.dragging = False
         self.elapsed_time = 0
         self.start_time = time.time()
         self.show_time = True
-        self.last_blink = 0
-        self.time_blinking = False
-        
-        # Reset movement
-        self.dragging = False
         self.drag_offset = 0
-        
-        # Reset gameplay parameters
+        self.color_count = 4
+        self.speed_level = 1
+        self.total_squares = 10
+        self.remaining_squares = self.total_squares
+        self.squares = []
+        self.current_square = self.create_square()
         self.fall_speed = 30  # mm per second
+        self.time_blinking = False
+        self.last_blink = 0
+        self.show_time = True
         self.delay_start = None
         self.is_delayed = True
-        
-        # Create first square
-        self.current_square = self.create_square()
 
     def create_square(self):
         if self.remaining_squares <= 0:
