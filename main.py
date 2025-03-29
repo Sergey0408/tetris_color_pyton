@@ -14,10 +14,12 @@ INFO_WIDTH = 50
 SQUARE_SIZE = 60
 SECTORS = 4
 SECTOR_WIDTH = GAME_WIDTH // SECTORS
+CLICK_SENSITIVITY = 20  # Increased click area
 
 # Colors
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
+BACKGROUND_COLOR = WHITE
 COLORS = [(255, 0, 0), (0, 255, 0), (0, 0, 255), (255, 255, 0),
           (255, 0, 255), (0, 255, 255), (128, 0, 0), (0, 128, 0),
           (0, 0, 128), (128, 128, 0), (128, 0, 128), (0, 128, 128),
@@ -40,7 +42,7 @@ class Game:
         self.remaining_squares = self.total_squares
         self.squares = []
         self.current_square = self.create_square()
-        self.fall_speed = 20  # mm per second
+        self.fall_speed = 30  # mm per second
         self.time_blinking = False
         self.last_blink = 0
         self.show_time = True
@@ -99,13 +101,10 @@ class Game:
         self.elapsed_time = int(time.time() - self.start_time)
 
     def draw(self):
-        self.screen.fill(BLACK)
+        self.screen.fill(BACKGROUND_COLOR)
         pygame.draw.rect(self.screen, WHITE, (0, 0, GAME_WIDTH, WINDOW_HEIGHT), 1)
         
-        # Draw sector lines
-        for i in range(1, SECTORS):
-            x = i * SECTOR_WIDTH
-            pygame.draw.line(self.screen, WHITE, (x, 0), (x, WINDOW_HEIGHT), 1)
+        
         
         # Draw squares
         for square in self.squares:
@@ -168,7 +167,7 @@ class Game:
                 self.color_count = color_counts[(current_index + 1) % len(color_counts)]
                 self.time_blinking = False
             elif 150 <= y <= 180:  # Speed button
-                self.speed_level = self.speed_level % 5 + 1
+                self.speed_level = self.speed_level % 10 + 1
                 self.time_blinking = False
             elif 200 <= y <= 230:  # Square count button
                 square_counts = [10, 20, 30, 40, 50]
@@ -189,10 +188,10 @@ def main():
                 x, y = event.pos
                 # Check if click is on current square at the top
                 if (game.current_square and 
-                    x >= game.current_square['x'] and 
-                    x < game.current_square['x'] + SQUARE_SIZE and
-                    y >= game.current_square['y'] and 
-                    y < game.current_square['y'] + SQUARE_SIZE):
+                    x >= game.current_square['x'] - CLICK_SENSITIVITY and 
+                    x < game.current_square['x'] + SQUARE_SIZE + CLICK_SENSITIVITY and
+                    y >= game.current_square['y'] - CLICK_SENSITIVITY and 
+                    y < game.current_square['y'] + SQUARE_SIZE + CLICK_SENSITIVITY):
                     # Cycle to next sector
                     game.current_square['sector'] = (game.current_square['sector'] + 1) % SECTORS
                     game.current_square['x'] = game.current_square['sector'] * SECTOR_WIDTH
