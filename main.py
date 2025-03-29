@@ -34,9 +34,10 @@ class Game:
 
     def reset_game(self):
         self.game_over = False
-        self.start_time = time.time()
-        self.elapsed_time = 0
         self.dragging = False
+        self.elapsed_time = 0
+        self.start_time = time.time()
+        self.show_time = True
         self.drag_offset = 0
         self.color_count = 4
         self.speed_level = 1
