@@ -12,6 +12,8 @@ WINDOW_HEIGHT = 600
 GAME_WIDTH = 250
 INFO_WIDTH = 50
 SQUARE_SIZE = 60
+SECTORS = 4
+SECTOR_WIDTH = GAME_WIDTH // SECTORS
 
 # Colors
 WHITE = (255, 255, 255)
@@ -48,12 +50,13 @@ class Game:
     def create_square(self):
         if self.remaining_squares <= 0:
             return None
-        x = random.randint(0, (GAME_WIDTH - SQUARE_SIZE) // SQUARE_SIZE) * SQUARE_SIZE
+        sector = random.randint(0, SECTORS - 1)
+        x = sector * SECTOR_WIDTH
         color = random.choice(COLORS[:self.color_count])
         self.remaining_squares -= 1
         self.is_delayed = True
         self.delay_start = None
-        return {'x': x, 'y': 0, 'color': color}
+        return {'x': x, 'y': 0, 'color': color, 'sector': sector}
 
     def update(self):
         if self.game_over:
@@ -98,6 +101,11 @@ class Game:
     def draw(self):
         self.screen.fill(BLACK)
         pygame.draw.rect(self.screen, WHITE, (0, 0, GAME_WIDTH, WINDOW_HEIGHT), 1)
+        
+        # Draw sector lines
+        for i in range(1, SECTORS):
+            x = i * SECTOR_WIDTH
+            pygame.draw.line(self.screen, WHITE, (x, 0), (x, WINDOW_HEIGHT), 1)
         
         # Draw squares
         for square in self.squares:
@@ -180,13 +188,15 @@ def main():
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 game.handle_click(event.pos)
             elif event.type == pygame.KEYDOWN:
-                if game.current_square and not game.game_over:
+                if game.current_square and not game.game_over and game.is_delayed:
                     if event.key == pygame.K_LEFT:
-                        if game.current_square['x'] > 0:
-                            game.current_square['x'] -= SQUARE_SIZE
+                        if game.current_square['sector'] > 0:
+                            game.current_square['sector'] -= 1
+                            game.current_square['x'] = game.current_square['sector'] * SECTOR_WIDTH
                     elif event.key == pygame.K_RIGHT:
-                        if game.current_square['x'] < GAME_WIDTH - SQUARE_SIZE:
-                            game.current_square['x'] += SQUARE_SIZE
+                        if game.current_square['sector'] < SECTORS - 1:
+                            game.current_square['sector'] += 1
+                            game.current_square['x'] = game.current_square['sector'] * SECTOR_WIDTH
 
         game.update()
         game.draw()
