@@ -107,7 +107,8 @@ class Game:
                 self.game_over = True
                 break
 
-        self.elapsed_time = int(time.time() - self.start_time)
+        if self.start_time is not None:
+            self.elapsed_time = int(time.time() - self.start_time)
 
     def draw(self):
         self.screen.fill(BACKGROUND_COLOR)
@@ -148,12 +149,19 @@ class Game:
             text_x = info_x + 5 + (button_width - time_text.get_width()) // 2
             self.screen.blit(time_text, (text_x, 60))
 
+        # Color icon
+        pygame.draw.circle(self.screen, BLUE, (info_x + 25, 85), 10)
+        
         # Color count button
         pygame.draw.rect(self.screen, BLUE, (info_x + 5, 100, button_width, 30), 1)
         color_text = font.render(str(self.color_count), True, BLUE)
         text_x = info_x + 5 + (button_width - color_text.get_width()) // 2
         self.screen.blit(color_text, (text_x, 110))
 
+        # Speed icon
+        points = [(info_x + 15, 135), (info_x + 35, 135), (info_x + 25, 145)]
+        pygame.draw.polygon(self.screen, BLUE, points)
+        
         # Speed button
         pygame.draw.rect(self.screen, BLUE, (info_x + 5, 150, button_width, 30), 1)
         speed_text = font.render(str(self.speed_level), True, BLUE)
@@ -205,7 +213,7 @@ class Game:
                 self.current_square = None
                 self.game_over = False
                 self.elapsed_time = 0
-                self.start_time = time.time()
+                self.start_time = None  # Stop the timer
                 self.remaining_squares = self.total_squares
 
 def main():
