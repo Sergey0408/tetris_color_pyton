@@ -86,10 +86,11 @@ class Game:
             else:
                 for square in self.squares:
                     if (self.current_square['y'] + SQUARE_SIZE >= square['y'] and
-                        self.current_square['x'] == square['x']):
+                        abs(self.current_square['x'] - square['x']) < 5):  # Small tolerance for alignment
                         if self.current_square['color'] == square['color']:
                             self.squares.remove(square)
                         else:
+                            self.current_square['y'] = square['y'] - SQUARE_SIZE
                             self.squares.append(self.current_square)
                         self.current_square = self.create_square()
                         break
@@ -266,14 +267,15 @@ def main():
             elif event.type == pygame.MOUSEMOTION:
                 if game.dragging and game.current_square:
                     x, y = event.pos
-                    # Handle horizontal movement
-                    new_x = x - game.drag_offset
-                    new_x = max(0, min(new_x, GAME_WIDTH - SQUARE_SIZE))
-                    game.current_square['x'] = new_x
-                    
-                    # Handle vertical movement (fast drop)
-                    if y > game.current_square['y']:
-                        game.current_square['y'] += 20  # Increase fall speed when dragging down
+                    if abs(y - game.current_square['y']) > abs(x - game.current_square['x']):
+                        # Vertical drag - maintain horizontal position
+                        if y > game.current_square['y']:
+                            game.current_square['y'] += 20  # Fast drop
+                    else:
+                        # Horizontal drag
+                        new_x = x - game.drag_offset
+                        new_x = max(0, min(new_x, GAME_WIDTH - SQUARE_SIZE))
+                        game.current_square['x'] = new_x
 
         game.update()
         game.draw()
