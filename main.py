@@ -298,7 +298,10 @@ def main():
                                         game.dragging = False
                                         break
                                     else:
-                                        new_y = square['y'] - SQUARE_SIZE
+                                        # Проверяем и устраняем зазор
+                                        if abs(square['y'] - (new_y + SQUARE_SIZE)) > 1:
+                                            new_y = square['y'] - SQUARE_SIZE
+                                        game.current_square['y'] = new_y
                                         game.squares.append(game.current_square)
                                         new_square = game.create_square()
                                         game.current_square = new_square
@@ -346,7 +349,10 @@ def main():
                                     game.dragging = False
                                     return
                                 else:
-                                    game.current_square['y'] = square['y'] - SQUARE_SIZE
+                                    # Проверяем и устраняем зазор при горизонтальном движении
+                                    new_y = square['y'] - SQUARE_SIZE
+                                    if abs(square['y'] - (game.current_square['y'] + SQUARE_SIZE)) > 1:
+                                        game.current_square['y'] = new_y
                                     game.squares.append(game.current_square)
                                     game.current_square = game.create_square()
                                     game.dragging = False
