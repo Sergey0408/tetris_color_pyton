@@ -289,6 +289,7 @@ def main():
                                     new_y = min(new_y, square['y'] - SQUARE_SIZE)
                             
                             # Move to the found position
+                            old_y = game.current_square['y']  # Сохраняем старую позицию
                             game.current_square['y'] = new_y
                             if new_y == WINDOW_HEIGHT - SQUARE_SIZE:
                                 game.squares.append(game.current_square)
