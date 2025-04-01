@@ -280,7 +280,9 @@ def main():
                         # Vertical drag - maintain horizontal position and check collisions
                         if y > game.current_square['y']:
                             old_y = game.current_square['y']
-                            new_y = old_y + 20  # Fast drop
+                            # Привязка к сетке по вертикали
+                            grid_y = int((y + SQUARE_SIZE/2) / SQUARE_SIZE) * SQUARE_SIZE
+                            new_y = min(grid_y, old_y + 20)  # Fast drop with grid alignment
 
                             # Check for collisions during fast drop
                             collision_found = False
@@ -322,8 +324,9 @@ def main():
                                 game.current_square['y'] = new_y
                     else:
                         # Horizontal drag
-                        new_x = x - game.drag_offset
-                        sector = int(new_x / SECTOR_WIDTH)
+                        # Привязка к сетке
+                        mouse_x = x - game.drag_offset
+                        sector = int((mouse_x + SECTOR_WIDTH/2) / SECTOR_WIDTH)
                         new_x = sector * SECTOR_WIDTH
                         new_x = max(0, min(new_x, GAME_WIDTH - SQUARE_SIZE))
 
