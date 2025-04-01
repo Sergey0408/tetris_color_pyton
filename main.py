@@ -246,14 +246,19 @@ def main():
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 x, y = event.pos
                 if x < GAME_WIDTH and game.current_square:  # Only in game field
-                    if x < game.current_square['x']:
-                        sector = max(0, game.current_square['sector'] - 1)
-                        game.current_square['sector'] = sector
-                        game.current_square['x'] = sector * SECTOR_WIDTH
-                    elif x > game.current_square['x'] + SQUARE_SIZE:
-                        sector = min(SECTORS - 1, game.current_square['sector'] + 1)
-                        game.current_square['sector'] = sector
-                        game.current_square['x'] = sector * SECTOR_WIDTH
+                    clicked_sector = int(x / SECTOR_WIDTH)
+                    current_sector = game.current_square['sector']
+                    
+                    # Блокируем клики в текущем столбце
+                    if clicked_sector != current_sector:
+                        if clicked_sector < current_sector:
+                            sector = max(0, game.current_square['sector'] - 1)
+                            game.current_square['sector'] = sector
+                            game.current_square['x'] = sector * SECTOR_WIDTH
+                        elif clicked_sector > current_sector:
+                            sector = min(SECTORS - 1, game.current_square['sector'] + 1)
+                            game.current_square['sector'] = sector
+                            game.current_square['x'] = sector * SECTOR_WIDTH
                     elif (x >= game.current_square['x'] and 
                           x < game.current_square['x'] + SQUARE_SIZE):
                         game.dragging = True
