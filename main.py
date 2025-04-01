@@ -280,9 +280,17 @@ def main():
                         # Vertical drag - maintain horizontal position and check collisions
                         if y > game.current_square['y']:
                             old_y = game.current_square['y']
-                            # Привязка к сетке по вертикали
-                            grid_y = int((y + SQUARE_SIZE/2) / SQUARE_SIZE) * SQUARE_SIZE
-                            new_y = min(grid_y, old_y + 20)  # Fast drop with grid alignment
+                            
+                            # Улучшенная привязка к сетке
+                            current_cell = int(old_y / SQUARE_SIZE)
+                            target_cell = int(y / SQUARE_SIZE)
+                            max_cells_move = 1  # Ограничение перемещения
+                            
+                            if target_cell > current_cell:
+                                target_cell = min(target_cell, current_cell + max_cells_move)
+                            
+                            new_y = target_cell * SQUARE_SIZE
+                            new_y = min(new_y, WINDOW_HEIGHT - SQUARE_SIZE)
 
                             # Check for collisions during fast drop
                             collision_found = False
@@ -323,11 +331,18 @@ def main():
                             elif not collision_found:
                                 game.current_square['y'] = new_y
                     else:
-                        # Horizontal drag
-                        # Привязка к сетке
+                        # Horizontal drag with improved grid snapping
                         mouse_x = x - game.drag_offset
-                        sector = int((mouse_x + SECTOR_WIDTH/2) / SECTOR_WIDTH)
-                        new_x = sector * SECTOR_WIDTH
+                        current_sector = int(game.current_square['x'] / SECTOR_WIDTH)
+                        target_sector = int(mouse_x / SECTOR_WIDTH)
+                        
+                        # Ограничение движения одной ячейкой за раз
+                        if target_sector > current_sector:
+                            target_sector = min(target_sector, current_sector + 1)
+                        elif target_sector < current_sector:
+                            target_sector = max(target_sector, current_sector - 1)
+                            
+                        new_x = target_sector * SECTOR_WIDTH
                         new_x = max(0, min(new_x, GAME_WIDTH - SQUARE_SIZE))
 
                         # Check if the new position overlaps with existing squares
