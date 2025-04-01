@@ -271,9 +271,32 @@ def main():
                 if game.dragging and game.current_square:
                     x, y = event.pos
                     if abs(y - game.current_square['y']) > abs(x - game.current_square['x']):
-                        # Vertical drag - maintain horizontal position
+                        # Vertical drag - maintain horizontal position and check collisions
                         if y > game.current_square['y']:
-                            game.current_square['y'] += 20  # Fast drop
+                            old_y = game.current_square['y']
+                            new_y = old_y + 20  # Fast drop
+                            
+                            # Check for collisions during fast drop
+                            for square in game.squares:
+                                if (game.current_square['x'] == square['x'] and 
+                                    old_y < square['y'] and 
+                                    new_y + SQUARE_SIZE >= square['y']):
+                                    if game.current_square['color'] == square['color']:
+                                        game.squares.remove(square)
+                                        game.current_square = game.create_square()
+                                        return
+                                    else:
+                                        new_y = square['y'] - SQUARE_SIZE
+                                    break
+                            
+                            # Check bottom boundary
+                            if new_y + SQUARE_SIZE >= WINDOW_HEIGHT:
+                                new_y = WINDOW_HEIGHT - SQUARE_SIZE
+                                game.squares.append(game.current_square)
+                                game.current_square = game.create_square()
+                                return
+                                
+                            game.current_square['y'] = new_y
                     else:
                         # Horizontal drag
                         new_x = x - game.drag_offset
