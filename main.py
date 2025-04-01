@@ -323,7 +323,7 @@ def main():
                     else:
                         # Horizontal drag
                         new_x = x - game.drag_offset
-                        sector = round(new_x / SECTOR_WIDTH)
+                        sector = int(new_x / SECTOR_WIDTH)
                         new_x = sector * SECTOR_WIDTH
                         new_x = max(0, min(new_x, GAME_WIDTH - SQUARE_SIZE))
 
