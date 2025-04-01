@@ -301,6 +301,21 @@ def main():
                         # Horizontal drag
                         new_x = x - game.drag_offset
                         new_x = max(0, min(new_x, GAME_WIDTH - SQUARE_SIZE))
+                        
+                        # Check collisions during horizontal drag
+                        for square in game.squares:
+                            if (game.current_square['y'] + SQUARE_SIZE >= square['y'] and
+                                new_x == square['x']):
+                                if game.current_square['color'] == square['color']:
+                                    game.squares.remove(square)
+                                    game.current_square = game.create_square()
+                                    return
+                                else:
+                                    game.current_square['y'] = square['y'] - SQUARE_SIZE
+                                    game.squares.append(game.current_square)
+                                    game.current_square = game.create_square()
+                                    return
+                        
                         game.current_square['x'] = new_x
 
         game.update()
