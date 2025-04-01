@@ -136,6 +136,11 @@ class Game:
         LIGHT_BLUE = (173, 216, 230)
         pygame.draw.rect(self.screen, LIGHT_BLUE, (info_x, 0, INFO_WIDTH, WINDOW_HEIGHT))
         BLUE = (0, 0, 255)
+        
+        # Draw down arrow button
+        pygame.draw.rect(self.screen, BLUE, (info_x + 5, 240, 40, 30), 1)
+        arrow_points = [(info_x + 25, 260), (info_x + 15, 245), (info_x + 35, 245)]
+        pygame.draw.polygon(self.screen, BLUE, arrow_points)
 
         # Draw buttons and info
         font = pygame.font.Font(None, 20)
@@ -206,11 +211,35 @@ class Game:
 
         pygame.display.flip()
 
+    def drop_current_square(self):
+        if not self.current_square:
+            return
+            
+        current_x = self.current_square['x']
+        max_y = WINDOW_HEIGHT - SQUARE_SIZE
+        
+        # Найдем нижележащий квадрат в том же столбце
+        for square in sorted(self.squares, key=lambda s: s['y']):
+            if square['x'] == current_x and square['y'] > self.current_square['y']:
+                if self.current_square['color'] == square['color']:
+                    self.squares.remove(square)
+                    self.current_square = self.create_square()
+                    return
+                else:
+                    max_y = square['y'] - SQUARE_SIZE
+                    break
+                    
+        self.current_square['y'] = max_y
+        self.squares.append(self.current_square)
+        self.current_square = self.create_square()
+
     def handle_click(self, pos):
         info_x = GAME_WIDTH
         x, y = pos
 
         if info_x + 5 <= x <= info_x + 45:
+            if 240 <= y <= 270:  # Down arrow button
+                self.drop_current_square()
             if 10 <= y <= 40:  # Start button
                 self.reset_game()
             elif 129 <= y <= 159:  # Color count button
