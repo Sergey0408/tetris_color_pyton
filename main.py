@@ -50,6 +50,7 @@ class Game:
         self.show_time = True
         self.delay_start = None
         self.is_delayed = True
+        self.drag_start_time = None # Added for drag timer
 
     def create_square(self):
         sector = random.randint(0, SECTORS - 1)
@@ -256,6 +257,7 @@ def main():
                     elif (x >= game.current_square['x'] and 
                           x < game.current_square['x'] + SQUARE_SIZE):
                         game.dragging = True
+                        game.drag_start_time = time.time() # Added for drag timer
                         game.drag_offset = x - game.current_square['x']
                 elif x >= GAME_WIDTH:  # Info panel clicks
                     game.handle_click(event.pos)
@@ -270,12 +272,16 @@ def main():
             elif event.type == pygame.MOUSEMOTION:
                 if game.dragging and game.current_square:
                     x, y = event.pos
+                    if time.time() - game.drag_start_time > 0.3: #Added drag timer check
+                        game.dragging = False
+                        continue
+
                     if abs(y - game.current_square['y']) > abs(x - game.current_square['x']):
                         # Vertical drag - maintain horizontal position and check collisions
                         if y > game.current_square['y']:
                             old_y = game.current_square['y']
                             new_y = old_y + 20  # Fast drop
-                            
+
                             # Check for collisions during fast drop
                             collision_found = False
                             for square in game.squares:
@@ -300,7 +306,7 @@ def main():
                                         game.delay_start = time.time()
                                         game.dragging = False
                                         break
-                            
+
                             # Check bottom boundary
                             if not collision_found and new_y + SQUARE_SIZE >= WINDOW_HEIGHT:
                                 new_y = WINDOW_HEIGHT - SQUARE_SIZE
@@ -317,7 +323,7 @@ def main():
                         sector = round(new_x / SECTOR_WIDTH)
                         new_x = sector * SECTOR_WIDTH
                         new_x = max(0, min(new_x, GAME_WIDTH - SQUARE_SIZE))
-                        
+
                         # Check if the new position overlaps with existing squares
                         can_move = True
                         for square in game.squares:
@@ -326,10 +332,10 @@ def main():
                                 game.current_square['y'] < square['y'] + SQUARE_SIZE):
                                 can_move = False
                                 break
-                        
+
                         if can_move:
                             game.current_square['x'] = new_x
-                        
+
                         # Check collisions during horizontal drag
                         for square in game.squares:
                             if (game.current_square['y'] + SQUARE_SIZE > square['y'] and
@@ -345,7 +351,7 @@ def main():
                                     game.current_square = game.create_square()
                                     game.dragging = False
                                     return
-                        
+
                         game.current_square['x'] = new_x
 
         game.update()
