@@ -280,7 +280,6 @@ def main():
                         # Click-to-drop functionality
                         if y > game.current_square['y']:
                             new_y = WINDOW_HEIGHT - SQUARE_SIZE
-                            collision_found = False
                             
                             # Find the lowest possible position
                             for square in game.squares:
@@ -289,16 +288,12 @@ def main():
                                     new_y = min(new_y, square['y'] - SQUARE_SIZE)
                             
                             # Move to the found position
-                            old_y = game.current_square['y']  # Сохраняем старую позицию
                             game.current_square['y'] = new_y
-                            if new_y == WINDOW_HEIGHT - SQUARE_SIZE:
-                                game.squares.append(game.current_square)
-                                game.current_square = game.create_square()
-                                game.dragging = False
-                                return
+                            
+                            # Check for color matches
                             for square in game.squares:
                                 if (game.current_square['x'] == square['x'] and 
-                                    old_y < square['y'] and 
+                                    game.current_square['y'] + SQUARE_SIZE >= square['y']): 
                                     new_y + SQUARE_SIZE > square['y']):
                                     collision_found = True
                                     if game.current_square['color'] == square['color']:
