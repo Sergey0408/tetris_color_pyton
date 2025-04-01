@@ -277,23 +277,24 @@ def main():
                         continue
 
                     if abs(y - game.current_square['y']) > abs(x - game.current_square['x']):
-                        # Vertical drag - maintain horizontal position and check collisions
+                        # Click-to-drop functionality
                         if y > game.current_square['y']:
-                            old_y = game.current_square['y']
-                            
-                            # Улучшенная привязка к сетке
-                            current_cell = int(old_y / SQUARE_SIZE)
-                            target_cell = int(y / SQUARE_SIZE)
-                            max_cells_move = 1  # Ограничение перемещения
-                            
-                            if target_cell > current_cell:
-                                target_cell = min(target_cell, current_cell + max_cells_move)
-                            
-                            new_y = target_cell * SQUARE_SIZE
-                            new_y = min(new_y, WINDOW_HEIGHT - SQUARE_SIZE)
-
-                            # Check for collisions during fast drop
+                            new_y = WINDOW_HEIGHT - SQUARE_SIZE
                             collision_found = False
+                            
+                            # Find the lowest possible position
+                            for square in game.squares:
+                                if (game.current_square['x'] == square['x'] and 
+                                    square['y'] > game.current_square['y']):
+                                    new_y = min(new_y, square['y'] - SQUARE_SIZE)
+                            
+                            # Move to the found position
+                            game.current_square['y'] = new_y
+                            if new_y == WINDOW_HEIGHT - SQUARE_SIZE:
+                                game.squares.append(game.current_square)
+                                game.current_square = game.create_square()
+                                game.dragging = False
+                                return
                             for square in game.squares:
                                 if (game.current_square['x'] == square['x'] and 
                                     old_y < square['y'] and 
