@@ -277,30 +277,56 @@ def main():
                             new_y = old_y + 20  # Fast drop
                             
                             # Check for collisions during fast drop
+                            collision_found = False
                             for square in game.squares:
                                 if (game.current_square['x'] == square['x'] and 
                                     old_y < square['y'] and 
                                     new_y + SQUARE_SIZE >= square['y']):
+                                    collision_found = True
                                     if game.current_square['color'] == square['color']:
                                         game.squares.remove(square)
-                                        game.current_square = game.create_square()
-                                        continue
+                                        new_square = game.create_square()
+                                        game.current_square = new_square
+                                        game.is_delayed = True
+                                        game.delay_start = time.time()
+                                        break
                                     else:
                                         new_y = square['y'] - SQUARE_SIZE
-                                    break
+                                        game.squares.append(game.current_square)
+                                        new_square = game.create_square()
+                                        game.current_square = new_square
+                                        game.is_delayed = True
+                                        game.delay_start = time.time()
+                                        break
                             
                             # Check bottom boundary
-                            if new_y + SQUARE_SIZE >= WINDOW_HEIGHT:
+                            if not collision_found and new_y + SQUARE_SIZE >= WINDOW_HEIGHT:
                                 new_y = WINDOW_HEIGHT - SQUARE_SIZE
                                 game.squares.append(game.current_square)
-                                game.current_square = game.create_square()
-                                continue
-                                
-                            game.current_square['y'] = new_y
+                                new_square = game.create_square()
+                                game.current_square = new_square
+                                game.is_delayed = True
+                                game.delay_start = time.time()
+                            elif not collision_found:
+                                game.current_square['y'] = new_y
                     else:
                         # Horizontal drag
                         new_x = x - game.drag_offset
+                        sector = round(new_x / SECTOR_WIDTH)
+                        new_x = sector * SECTOR_WIDTH
                         new_x = max(0, min(new_x, GAME_WIDTH - SQUARE_SIZE))
+                        
+                        # Check if the new position overlaps with existing squares
+                        can_move = True
+                        for square in game.squares:
+                            if (new_x == square['x'] and 
+                                game.current_square['y'] + SQUARE_SIZE > square['y'] and
+                                game.current_square['y'] < square['y'] + SQUARE_SIZE):
+                                can_move = False
+                                break
+                        
+                        if can_move:
+                            game.current_square['x'] = new_x
                         
                         # Check collisions during horizontal drag
                         for square in game.squares:
