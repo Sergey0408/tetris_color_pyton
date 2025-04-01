@@ -284,7 +284,7 @@ def main():
                                     if game.current_square['color'] == square['color']:
                                         game.squares.remove(square)
                                         game.current_square = game.create_square()
-                                        return
+                                        continue
                                     else:
                                         new_y = square['y'] - SQUARE_SIZE
                                     break
@@ -294,7 +294,7 @@ def main():
                                 new_y = WINDOW_HEIGHT - SQUARE_SIZE
                                 game.squares.append(game.current_square)
                                 game.current_square = game.create_square()
-                                return
+                                continue
                                 
                             game.current_square['y'] = new_y
                     else:
