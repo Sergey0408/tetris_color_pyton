@@ -291,10 +291,10 @@ def main():
                             game.current_square['y'] = new_y
                             
                             # Check for color matches
+                            collision_found = False
                             for square in game.squares:
                                 if (game.current_square['x'] == square['x'] and 
-                                    game.current_square['y'] + SQUARE_SIZE >= square['y']): 
-                                    new_y + SQUARE_SIZE > square['y']):
+                                    game.current_square['y'] + SQUARE_SIZE >= square['y']):
                                     collision_found = True
                                     if game.current_square['color'] == square['color']:
                                         game.squares.remove(square)
