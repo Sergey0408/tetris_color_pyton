@@ -276,57 +276,32 @@ def main():
                         game.dragging = False
                         continue
 
-                    if abs(y - game.current_square['y']) > abs(x - game.current_square['x']):
-                        # Click-to-drop functionality
-                        if y > game.current_square['y']:
-                            new_y = WINDOW_HEIGHT - SQUARE_SIZE
-                            
-                            # Find the lowest possible position
-                            for square in game.squares:
-                                if (game.current_square['x'] == square['x'] and 
-                                    square['y'] > game.current_square['y']):
-                                    new_y = min(new_y, square['y'] - SQUARE_SIZE)
-                            
-                            # Move to the found position
-                            game.current_square['y'] = new_y
-                            
-                            # Check for color matches
-                            collision_found = False
-                            for square in game.squares:
-                                if (game.current_square['x'] == square['x'] and 
-                                    game.current_square['y'] + SQUARE_SIZE >= square['y']):
-                                    collision_found = True
-                                    if game.current_square['color'] == square['color']:
-                                        game.squares.remove(square)
-                                        new_square = game.create_square()
-                                        game.current_square = new_square
-                                        game.is_delayed = True
-                                        game.delay_start = time.time()
-                                        game.dragging = False
-                                        break
-                                    else:
-                                        # Проверяем и устраняем зазор
-                                        if abs(square['y'] - (new_y + SQUARE_SIZE)) > 1:
-                                            new_y = square['y'] - SQUARE_SIZE
-                                        game.current_square['y'] = new_y
-                                        game.squares.append(game.current_square)
-                                        new_square = game.create_square()
-                                        game.current_square = new_square
-                                        game.is_delayed = True
-                                        game.delay_start = time.time()
-                                        game.dragging = False
-                                        break
+                    # Только горизонтальное перетаскивание
+                    # Horizontal drag with improved grid snapping
+                    mouse_x = x - game.drag_offset
+                    current_sector = int(game.current_square['x'] / SECTOR_WIDTH)
+                    target_sector = int(mouse_x / SECTOR_WIDTH)
+                    
+                    # Ограничение движения одной ячейкой за раз
+                    if target_sector > current_sector:
+                        target_sector = min(target_sector, current_sector + 1)
+                    elif target_sector < current_sector:
+                        target_sector = max(target_sector, current_sector - 1)
+                        
+                    new_x = target_sector * SECTOR_WIDTH
+                    new_x = max(0, min(new_x, GAME_WIDTH - SQUARE_SIZE))
 
-                            # Check bottom boundary
-                            if not collision_found and new_y + SQUARE_SIZE >= WINDOW_HEIGHT:
-                                new_y = WINDOW_HEIGHT - SQUARE_SIZE
-                                game.squares.append(game.current_square)
-                                new_square = game.create_square()
-                                game.current_square = new_square
-                                game.is_delayed = True
-                                game.delay_start = time.time()
-                            elif not collision_found:
-                                game.current_square['y'] = new_y
+                    # Check if the new position overlaps with existing squares
+                    can_move = True
+                    for square in game.squares:
+                        if (new_x == square['x'] and 
+                            game.current_square['y'] + SQUARE_SIZE > square['y'] and
+                            game.current_square['y'] < square['y'] + SQUARE_SIZE):
+                            can_move = False
+                            break
+
+                    if can_move:
+                        game.current_square['x'] = new_x
                     else:
                         # Horizontal drag with improved grid snapping
                         mouse_x = x - game.drag_offset
