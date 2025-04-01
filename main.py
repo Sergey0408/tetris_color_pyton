@@ -1,4 +1,3 @@
-
 import pygame
 import random
 import time
@@ -81,24 +80,28 @@ class Game:
 
             # Check collision with bottom or other squares
             if self.current_square['y'] + SQUARE_SIZE >= WINDOW_HEIGHT:
+                self.current_square['y'] = WINDOW_HEIGHT - SQUARE_SIZE
                 self.squares.append(self.current_square)
                 self.current_square = self.create_square()
             else:
                 for square in self.squares:
                     if (self.current_square['y'] + SQUARE_SIZE >= square['y'] and
-                        abs(self.current_square['x'] - square['x']) < 5):  # Small tolerance for alignment
+                        self.current_square['x'] == square['x']):
                         if self.current_square['color'] == square['color']:
+                            # Если цвета совпадают - удаляем оба квадрата
                             self.squares.remove(square)
+                            self.current_square = self.create_square()
                         else:
+                            # Если цвета разные - кладем сверху
                             self.current_square['y'] = square['y'] - SQUARE_SIZE
                             self.squares.append(self.current_square)
-                        self.current_square = self.create_square()
+                            self.current_square = self.create_square()
                         break
 
         # Check game end conditions
         if not self.current_square and self.remaining_squares <= 0:
             self.game_over = True
-        
+
         # Check vertical stack in each sector
         sector_counts = [0] * SECTORS
         for square in self.squares:
@@ -114,9 +117,9 @@ class Game:
     def draw(self):
         self.screen.fill(BACKGROUND_COLOR)
         pygame.draw.rect(self.screen, WHITE, (0, 0, GAME_WIDTH, WINDOW_HEIGHT), 1)
-        
-        
-        
+
+
+
         # Draw squares
         for square in self.squares:
             pygame.draw.rect(self.screen, square['color'],
@@ -135,9 +138,9 @@ class Game:
 
         # Draw buttons and info
         font = pygame.font.Font(None, 20)
-        
+
         button_width = 40
-        
+
         # Start button
         pygame.draw.rect(self.screen, BLUE, (info_x + 5, 10, button_width, 30), 1)
         start_text = font.render("Start", True, BLUE)
@@ -155,13 +158,13 @@ class Game:
         center = (info_x + 25, 125)  # Color icon position
         radius = 10
         colors = [COLORS[0], COLORS[1], COLORS[2], COLORS[3]]
-        
+
         # Draw 4 sectors
         pygame.draw.circle(self.screen, colors[0], (center[0] - 5, center[1] - 5), 5)
         pygame.draw.circle(self.screen, colors[1], (center[0] + 5, center[1] - 5), 5)
         pygame.draw.circle(self.screen, colors[2], (center[0] - 5, center[1] + 5), 5)
         pygame.draw.circle(self.screen, colors[3], (center[0] + 5, center[1] + 5), 5)
-        
+
         # Color count button
         pygame.draw.rect(self.screen, BLUE, (info_x + 5, 129, button_width, 30), 1)
         larger_font = pygame.font.Font(None, 30)  # 1.5x larger font
@@ -175,7 +178,7 @@ class Game:
         v_text = speed_icon_font.render("V", True, BLUE)
         v_x = info_x + 5 + (button_width - v_text.get_width()) // 2
         self.screen.blit(v_text, (v_x, 169))  # 1mm gap from color button
-        
+
         # Speed button
         pygame.draw.rect(self.screen, BLUE, (info_x + 5, 188, button_width, 30), 1)
         speed_text = larger_font.render(str(self.speed_level), True, BLUE)
