@@ -281,7 +281,7 @@ def main():
                             for square in game.squares:
                                 if (game.current_square['x'] == square['x'] and 
                                     old_y < square['y'] and 
-                                    new_y + SQUARE_SIZE >= square['y']):
+                                    new_y + SQUARE_SIZE > square['y']):
                                     collision_found = True
                                     if game.current_square['color'] == square['color']:
                                         game.squares.remove(square)
@@ -289,6 +289,7 @@ def main():
                                         game.current_square = new_square
                                         game.is_delayed = True
                                         game.delay_start = time.time()
+                                        game.dragging = False
                                         break
                                     else:
                                         new_y = square['y'] - SQUARE_SIZE
@@ -297,6 +298,7 @@ def main():
                                         game.current_square = new_square
                                         game.is_delayed = True
                                         game.delay_start = time.time()
+                                        game.dragging = False
                                         break
                             
                             # Check bottom boundary
@@ -330,16 +332,18 @@ def main():
                         
                         # Check collisions during horizontal drag
                         for square in game.squares:
-                            if (game.current_square['y'] + SQUARE_SIZE >= square['y'] and
+                            if (game.current_square['y'] + SQUARE_SIZE > square['y'] and
                                 new_x == square['x']):
                                 if game.current_square['color'] == square['color']:
                                     game.squares.remove(square)
                                     game.current_square = game.create_square()
+                                    game.dragging = False
                                     return
                                 else:
                                     game.current_square['y'] = square['y'] - SQUARE_SIZE
                                     game.squares.append(game.current_square)
                                     game.current_square = game.create_square()
+                                    game.dragging = False
                                     return
                         
                         game.current_square['x'] = new_x
