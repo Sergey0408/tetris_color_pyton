@@ -265,9 +265,15 @@ def main():
                     game.current_square['x'] = sector * SECTOR_WIDTH
             elif event.type == pygame.MOUSEMOTION:
                 if game.dragging and game.current_square:
-                    x = event.pos[0] - game.drag_offset
-                    x = max(0, min(x, GAME_WIDTH - SQUARE_SIZE))
-                    game.current_square['x'] = x
+                    x, y = event.pos
+                    # Handle horizontal movement
+                    new_x = x - game.drag_offset
+                    new_x = max(0, min(new_x, GAME_WIDTH - SQUARE_SIZE))
+                    game.current_square['x'] = new_x
+                    
+                    # Handle vertical movement (fast drop)
+                    if y > game.current_square['y']:
+                        game.current_square['y'] += 20  # Increase fall speed when dragging down
 
         game.update()
         game.draw()
